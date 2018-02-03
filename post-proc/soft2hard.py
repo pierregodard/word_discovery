@@ -27,7 +27,7 @@ def getMaxProbCol(line, sentenceMatrix):
 def segment(filePath, controlSeg, reverse):
     matrix = readMatrixFile(filePath)
     if not reverse:
-        matrix = [list(i) for i in zip(*matrix)]
+        matrix = [list(i) for i in zip(*matrix)]  # so you transpose here?
     finalString = ""
     lastCol = -1
     for i in range(1, len(matrix)): #for each element
@@ -81,9 +81,9 @@ def main():
         sentencesPaths = glob.glob(args.matrices_folder+"*.txt") #the seq2seq always produces matrices ending with .txt
         outputPath = args.output_file
 
-        for index in range(1, len(sentencesPaths)+1):
+        for index in range(0, len(sentencesPaths)):
             filePath = getPath(index, sentencesPaths)
-            finalstr = segment(filePath, [], args.reverse).replace(" </S>","").replace("</S>","") #removing EOS
+            finalstr = segment(filePath, [], args.reverse).replace(" </s>","").replace("</s>","") #removing EOS
             writeOutput(finalstr, outputPath)
 
     if args.matrices_folder and args.individual_files and args.output_folder:
@@ -94,9 +94,9 @@ def main():
             folder+= "/"
         assert len(files_output_list) == len(sentencesPaths)
 
-        for index in range(1, len(sentencesPaths)+1):
+        for index in range(0, len(sentencesPaths)):
             filePath = getPath(index, sentencesPaths)
-            finalstr = segment(filePath, [], args.reverse).replace(" </S>","").replace("</S>","") #removing EOS
+            finalstr = segment(filePath, [], args.reverse).replace(" </s>","").replace("</s>","") #removing EOS
             writeOutput(finalstr, folder + files_output_list[index-1].split("/")[-1] + ".hardseg")
             #writeOutput(finalstr, outputPath)
 
