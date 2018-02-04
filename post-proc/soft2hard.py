@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import codecs
+import io
 import glob
 import argparse
 
@@ -12,8 +12,7 @@ def getPath(number, paths):
     return None
 
 def readMatrixFile(path):
-    #print path
-    return [line.strip("\n").split("\t") for line in codecs.open(path,"r","UTF-8")]
+    return [line.strip("\n").split("\t") for line in io.open(path, mode='r', encoding='utf-8')]
 
 def getMaxProbCol(line, sentenceMatrix):
     maxValue = float(sentenceMatrix[line][1]) #start from the first line after the characters
@@ -49,12 +48,12 @@ def segment(filePath, controlSeg, reverse):
     return finalString
 
 def writeOutput(finalString, output):
-    with codecs.open(output, "a", "UTF-8") as outputFile:
+    with io.open(output, mode='a', encoding='utf-8') as outputFile:
         outputFile.write(finalString + "\n")
 
 def readControlFile(inputPath):
 	words = []
-	with codecs.open(inputPath, "r", "UTF-8") as inputFile:
+	with io.open(inputPath, mode='r', encoding='utf-8') as inputFile:
 		for line in inputFile:
 			for word in line.strip("\n").split("\t"):
 				if not word in words:
@@ -62,7 +61,7 @@ def readControlFile(inputPath):
 	return words
 
 def readFile(path):
-    return [line.strip("\n") for line in codecs.open(path, "r","UTF-8")]
+    return [line.strip("\n") for line in io.open(path, mode='r', encoding='utf-8')]
 
 def main():
     parser = argparse.ArgumentParser()
@@ -88,7 +87,7 @@ def main():
 
     if args.matrices_folder and args.individual_files and args.output_folder:
         sentencesPaths = glob.glob(args.matrices_folder+"*.txt") #the seq2seq always produces matrices ending with .txt
-        files_output_list = readFile(args.files_output_list)
+        files_output_list = readFile(args.individual_files)
         folder = args.output_folder
         if folder[-1] != "/":
             folder+= "/"
@@ -97,7 +96,7 @@ def main():
         for index in range(0, len(sentencesPaths)):
             filePath = getPath(index, sentencesPaths)
             finalstr = segment(filePath, [], args.reverse).replace(" </s>","").replace("</s>","") #removing EOS
-            writeOutput(finalstr, folder + files_output_list[index-1].split("/")[-1] + ".hardseg")
+            writeOutput(finalstr, folder + files_output_list[index].split("/")[-1] + ".hardseg")
             #writeOutput(finalstr, outputPath)
 
 if __name__ == "__main__":
